@@ -2,3 +2,43 @@ resource "aws_instance" "myec" {
   ami = "ami-0406d1fdd021121cd"
   instance_type = lookup(var.instance_type,terraform.workspace)
 }
+
+
+resource "azurerm_linux_virtual_machine" "vm1" {
+  name                = "nginx-server"
+  resource_group_name = azurerm_resource_group.webapp.name
+  location            = azurerm_resource_group.webapp.location
+  size                = "Standard_F2"
+  admin_username      = "adminuser"
+  admin_password = "Redhat@123#"
+  disable_password_authentication = "false"
+  network_interface_ids = [
+    azurerm_network_interface.nic1.id,
+  ]
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts"
+    version   = "latest"
+  }
+  provisioner "remote-exec" {
+    connection {
+      type = "ssh"
+      user = self.admin_username
+      password = self.admin_password
+      host = self.public_ip_address
+    }
+    inline = [ 
+        # "sudo apt-get update -y",
+        "sudo apt-get install nginx -y",
+        "sudo systemctl start nginx"
+     ]
+    
+  }
+}
