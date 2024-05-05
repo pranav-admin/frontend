@@ -1,6 +1,11 @@
 nginx
 MySQL
+<<<<<<< HEAD
 
 
 httpd
 firewalld
+=======
+redis
+k8s
+>>>>>>> color

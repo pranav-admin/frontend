@@ -1,1 +1,4 @@
-new file
+resource "aws_instance" "myec" {
+  ami = "ami-0406d1fdd021121cd"
+  instance_type = lookup(var.instance_type,terraform.workspace)
+}

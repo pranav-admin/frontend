@@ -1,2 +1,9 @@
 Creating web app
+<<<<<<< HEAD
 </h1>Welcome to Git </h1>
+=======
+
+Pranav
+
+Hello
+>>>>>>> color
