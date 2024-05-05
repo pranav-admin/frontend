@@ -1,2 +1,6 @@
 nginx
-mysql
+MySQL
+
+
+httpd
+firewalld
