@@ -2,3 +2,45 @@ resource "aws_instance" "myec" {
   ami = "ami-0406d1fdd021121cd"
   instance_type = lookup(var.instance_type,terraform.workspace)
 }
+
+
+resource "azurerm_virtual_network" "vnet" {
+  name                = "example-network"
+  location            = azurerm_resource_group.webapp.location
+  resource_group_name = azurerm_resource_group.webapp.name
+  address_space       = ["10.0.0.0/16"]
+#   dns_servers         = ["10.0.0.4", "10.0.0.5"]
+
+}
+
+resource "azurerm_subnet" "sub1" {
+  name                 = "example-subnet"
+  resource_group_name  = azurerm_resource_group.webapp.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = ["10.0.1.0/24"]
+
+}
+
+resource "azurerm_public_ip" "pub-ip" {
+  name                = "myip"
+  resource_group_name = azurerm_resource_group.webapp.name
+  location            = azurerm_resource_group.webapp.location
+  allocation_method   = "Static"
+
+  provisioner "local-exec" {
+    command = "echo ${azurerm_public_ip.pub-ip.ip_address} >> web-ip.txt"
+  }
+}
+
+resource "azurerm_network_interface" "nic1" {
+  name                = "example-nic"
+  location            = azurerm_resource_group.webapp.location
+  resource_group_name = azurerm_resource_group.webapp.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.sub1.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id = azurerm_public_ip.pub-ip.id
+  }
+}
