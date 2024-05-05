@@ -1,2 +1,4 @@
 nginx
-mysql
+MySQL
+redis
+k8s
